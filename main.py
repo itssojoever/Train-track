@@ -4,6 +4,7 @@
 
 import os
 import logging
+import customtkinter
 import ttkbootstrap as ttk
 
 from nredarwin.webservice import DarwinLdbSession
@@ -36,16 +37,20 @@ class Config():
 class TrainFetcher():
 
     def __init__(self, config: Config):
-        self.root = ttk.Window(themename="superhero")
-        self.root.position_center()
+        customtkinter.set_appearance_mode("System")
+        customtkinter.set_default_color_theme("dark-blue")
+        
+        self.root = customtkinter.CTk()
+
+        self.root.eval('tk::PlaceWindow . center')
         self.root.resizable(True, True)
         self.root.geometry("500x500")
         self.root.title("Train track")
-        self.root.iconname(None)
+        #self.root.iconphoto(None)
 
         self.config = config
     
-    def initMainLoop(self):
+    def init_main_loop(self):
         self.root.mainloop()
 
 
@@ -86,4 +91,4 @@ class TrainFetcher():
 if __name__ == '__main__':
     config = Config()
     program = TrainFetcher(config)
-    program.initMainLoop()
+    program.init_main_loop()
