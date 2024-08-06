@@ -42,7 +42,7 @@ class TrainFetcher():
 
         self.root.eval('tk::PlaceWindow . center')
         self.root.resizable(True, True)
-        self.root.geometry("500x400")
+        self.root.geometry("500x480")
         self.root.title("Train track")
         #self.root.iconphoto(None)
 
@@ -50,6 +50,7 @@ class TrainFetcher():
 
         self.create_gui()
         self.init_data_fetch()
+        self.get_time()
     
     def init_main_loop(self):
         self.root.mainloop()
@@ -65,8 +66,11 @@ class TrainFetcher():
         self.optionmenu_1 = customtkinter.CTkOptionMenu(self.frame_1, values=self.config.crs, command=self.optionmenu_1_response)
         self.optionmenu_1.pack(pady=10)
 
-        self.service_display_1 = customtkinter.CTkTextbox(self.root, state="disabled", width=400, height=270)
+        self.service_display_1 = customtkinter.CTkTextbox(self.root, state="disabled", width=420, height=335)
         self.service_display_1.pack()
+
+        self.time_label_1 = customtkinter.CTkLabel(self.root, font=("Helvetica", 24))
+        self.time_label_1.pack()
 
     def optionmenu_1_response(self, crs_choice):
         self.station_chosen = crs_choice
@@ -76,7 +80,14 @@ class TrainFetcher():
         initial_crs = self.config.crs[0]
         self.optionmenu_1_response(initial_crs)
 
+    def get_time(self):
+        time = datetime.now()
+        self.formatted_time = time.strftime("%H:%M:%S")
 
+        self.time_label_1.configure(text=f"Time:{self.formatted_time}")
+
+        #Update once every 1000MS. I.E: a second
+        self.root.after(1000, self.get_time)
 
     def service_disruption_check(self):
         pass
@@ -84,6 +95,9 @@ class TrainFetcher():
     def crs_code_to_station_name(self, station_name): #Changes the CRS code to a full name string for the station
         station_full_description = self.Darwin.get_station_board(crs=self.station_chosen)
         return station_full_description
+    
+    def schedule_service_data(self):
+        pass
 
     def get_service_data(self, station_chosen):
 
@@ -107,7 +121,6 @@ class TrainFetcher():
                                  "===============================\n\n")
         
         self.service_display_1.insert("end", chosen_station_output)
-
 
         for service in self.board.train_services:
             if self.config.max_services <=0: #break loop after configured limit of services to be displayed is reached
