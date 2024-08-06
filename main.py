@@ -18,15 +18,13 @@ class Config():
         self.arrival_switch = 2 #1 for arrival time, #2 for departure time
         self.max_services = 2 #Maximum number of services to display
         self.platform = 1 #Which platform to check
-        self.crs = "MAN" #Remove hardcoding of station later
+        self.crs = ["BHM", "BRV", "UNI"]
 
         #get apikey
         self.api_key = os.getenv("api_key")
         if self.api_key is None:
             logging.critical("API Key is empty")
             raise ValueError("API key is empty")
-        
-            
         
 
     def load_config(self, env_file: str=".env"):
@@ -49,9 +47,15 @@ class TrainFetcher():
         #self.root.iconphoto(None)
 
         self.config = config
+
+        self.create_gui()
     
     def init_main_loop(self):
         self.root.mainloop()
+
+    def create_gui(self):
+        option_menu_1 = customtkinter.CTkOptionMenu(self.root, values=self.config.crs)
+        option_menu_1.pack(pady=20)
 
 
     def service_disruption_check(self):
@@ -64,6 +68,7 @@ class TrainFetcher():
             Darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
 
             board = Darwin.get_station_board(crs=self.config.crs)
+
         
         except Exception as e:
             logging.critical(f"An error occured whilst trying to receive data via API: {e}")
