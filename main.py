@@ -20,7 +20,6 @@ class Config():
         self.arrival_switch = 2 #1 for arrival time, #2 for departure time
         self.max_services_options = ["1", "2", "3", "4", "5", "6", "7", "8"] #Maximum number of services to display
         self.max_services = 4
-        self.platform = 1 #Which platform to check
         self.crs = ["BHM", "BRV", "UNI"]
 
         #get apikey
