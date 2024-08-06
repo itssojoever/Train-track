@@ -42,7 +42,7 @@ class TrainFetcher():
 
         self.root.eval('tk::PlaceWindow . center')
         self.root.resizable(True, True)
-        self.root.geometry("500x500")
+        self.root.geometry("500x400")
         self.root.title("Train track")
         #self.root.iconphoto(None)
 
@@ -55,10 +55,17 @@ class TrainFetcher():
         self.root.mainloop()
 
     def create_gui(self):
-        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.root, values=self.config.crs, command=self.optionmenu_1_response)
-        self.optionmenu_1.pack(pady=20)
 
-        self.service_display_1 = customtkinter.CTkTextbox(self.root, state="disabled", width=400)
+        self.frame_1 = customtkinter.CTkFrame(self.root)
+        self.frame_1.pack(pady=20)
+
+        self.label_1 = customtkinter.CTkLabel(self.frame_1, text="Select station:")
+        self.label_1.pack()
+
+        self.optionmenu_1 = customtkinter.CTkOptionMenu(self.frame_1, values=self.config.crs, command=self.optionmenu_1_response)
+        self.optionmenu_1.pack(pady=10)
+
+        self.service_display_1 = customtkinter.CTkTextbox(self.root, state="disabled", width=400, height=270)
         self.service_display_1.pack()
 
     def optionmenu_1_response(self, crs_choice):
@@ -74,13 +81,17 @@ class TrainFetcher():
     def service_disruption_check(self):
         pass
 
+    def crs_code_to_station_name(self, station_name): #Changes the CRS code to a full name string for the station
+        station_full_description = self.Darwin.get_station_board(crs=self.station_chosen)
+        return station_full_description
+
     def get_service_data(self, station_chosen):
 
         try:
 
-            Darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
+            self.Darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
 
-            board = Darwin.get_station_board(crs=station_chosen)
+            self.board = self.Darwin.get_station_board(crs=station_chosen)
 
         
         except Exception as e:
@@ -89,8 +100,16 @@ class TrainFetcher():
         self.service_display_1.configure(state="normal")
         self.service_display_1.delete("1.0", "end")
 
+        station_full_description = str(self.crs_code_to_station_name(station_chosen))
+        station_full_description_slice = station_full_description[5:]
 
-        for service in board.train_services:
+        chosen_station_output = (f"Displaying services for: {station_full_description_slice}\n"
+                                 "===============================\n\n")
+        
+        self.service_display_1.insert("end", chosen_station_output)
+
+
+        for service in self.board.train_services:
             if self.config.max_services <=0: #break loop after configured limit of services to be displayed is reached
                 break
             
@@ -108,7 +127,11 @@ class TrainFetcher():
             print (f"Platform : {platform}")
             print ("------------------------------------------")
 
-            service_output = f"Destination: {destination}\n Departure time: {departure_time}\n\n"
+            service_output = (f"Destination: {destination}\n"
+            f"Departure time: {departure_time}\n"
+            f"Platform: {platform}\n"
+            f"Provider: {operator}\n"
+            f"------------------------------------------\n\n")
 
             self.service_display_1.insert("end", service_output)
 
