@@ -17,6 +17,9 @@ class Config():
     def __init__(self, env_file: str=".env"):
         self.load_config(env_file)
 
+        self.color_theme = "dark-blue"
+        self.appearance_mode = "system"
+
         self.arrival_switch = 2 #1 for arrival time, #2 for departure time
         self.max_services_options = ["1", "2", "3", "4", "5", "6", "7", "8"] #Maximum number of services to display
         self.max_services = 4
@@ -37,8 +40,8 @@ class Config():
 class TrainFetcher():
 
     def __init__(self, config: Config):
-        customtkinter.set_appearance_mode("System")
-        customtkinter.set_default_color_theme("dark-blue")
+        customtkinter.set_appearance_mode(config.appearance_mode)
+        customtkinter.set_default_color_theme(config.color_theme)
         
         self.root = customtkinter.CTk()
 
