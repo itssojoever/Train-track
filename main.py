@@ -119,16 +119,15 @@ class TrainFetcher():
     def service_disruption_check(self):
         pass
 
-    def crs_code_to_station_name(self, station_name): #Changes the CRS code to a full name string for the station
-        station_full_description = self.darwin.get_station_board(crs=self.station_chosen)
-        return station_full_description
+    def crs_code_to_station_name(self, station_chosen): #Changes the CRS code to a full name string for the station
+        return self.darwin.get_station_board(crs=self.station_chosen)
 
     def get_service_data(self, station_chosen):
 
         try:
             self.board = self.darwin.get_station_board(crs=station_chosen)
         
-        except:
+        except Exception:
             try:
                 self.api_connection()
             except Exception as e:
@@ -153,11 +152,11 @@ class TrainFetcher():
             
             destination = service.destination_text
             
-            if self.config.arrival_switch == 2:
-                departure_time = service.std
-                
-            elif self.config.arrival_switch == 1:
+            if self.config.arrival_switch == 1:
                 arrival_time = service.sta
+                
+            elif self.config.arrival_switch == 2:
+                departure_time = service.std
                 
             operator = service.operator_name
             platform = service.platform
