@@ -1,11 +1,9 @@
 #A program to receive and display UK train service information
 #Schedule to email train times every morning (after classes too?)
-#GUI to input station and visualise services. Enable or disable GUI with a switch
 
 import os
 import logging
 import customtkinter
-import ttkbootstrap as ttk
 
 from nredarwin.webservice import DarwinLdbSession
 from dotenv import load_dotenv
@@ -90,7 +88,6 @@ class TrainFetcher():
     def api_connection(self):
         try:
             self.darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
-            return self.darwin
         
         except Exception as e:
             logging.critical(f"An error occured whilst trying to receive data via API: {e}")
