@@ -4,6 +4,8 @@
 import os
 import logging
 import customtkinter
+import time
+
 
 from nredarwin.webservice import DarwinLdbSession
 from dotenv import load_dotenv
@@ -85,12 +87,21 @@ class TrainFetcher():
         self.time_label_1 = customtkinter.CTkLabel(self.root, font=("Helvetica", 24))
         self.time_label_1.pack()
 
-    def api_connection(self):
-        try:
-            self.darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
+    def api_connection(self, max_retries=3, wait_time=5):
+        attempt = 0
+        while attempt < max_retries:
+            try:
+                self.darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
+                return
         
-        except Exception as e:
-            logging.critical(f"An error occured whilst trying to receive data via API: {e}")
+            except Exception as e:
+                attempt +=1
+                logging.warning(f"Attempt {attempt} failed: {e}")
+                if attempt < max_retries: 
+                    time.sleep(wait_time)
+                else:
+                    logging.critical(f"An error occured whilst trying to receive data via API: {e}")
+                    raise
 
 
     def optionmenu_1_response(self, crs_choice):
@@ -117,7 +128,7 @@ class TrainFetcher():
         self.root.after(1000, self.get_time)
 
     def service_disruption_check(self):
-        pass
+        pass #not implemented
 
     def crs_code_to_station_name(self, station_chosen): #Changes the CRS code to a full name string for the station
         return self.darwin.get_station_board(crs=self.station_chosen)
