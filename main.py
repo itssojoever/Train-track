@@ -40,6 +40,7 @@ class Config():
 class TrainFetcher():
 
     def __init__(self, config: Config):
+        
         customtkinter.set_appearance_mode(config.appearance_mode)
         customtkinter.set_default_color_theme(config.color_theme)
         
@@ -53,6 +54,7 @@ class TrainFetcher():
 
         self.config = config
 
+        self.api_connection()
         self.create_gui()
         self.init_data_fetch()
         self.get_time()
@@ -85,6 +87,15 @@ class TrainFetcher():
         self.time_label_1 = customtkinter.CTkLabel(self.root, font=("Helvetica", 24))
         self.time_label_1.pack()
 
+    def api_connection(self):
+        try:
+            self.darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
+            return self.darwin
+        
+        except Exception as e:
+            logging.critical(f"An error occured whilst trying to receive data via API: {e}")
+
+
     def optionmenu_1_response(self, crs_choice):
         self.station_chosen = crs_choice
         self.get_service_data(self.station_chosen)
@@ -112,20 +123,19 @@ class TrainFetcher():
         pass
 
     def crs_code_to_station_name(self, station_name): #Changes the CRS code to a full name string for the station
-        station_full_description = self.Darwin.get_station_board(crs=self.station_chosen)
+        station_full_description = self.darwin.get_station_board(crs=self.station_chosen)
         return station_full_description
 
     def get_service_data(self, station_chosen):
 
         try:
-
-            self.Darwin = DarwinLdbSession(wsdl="https://lite.realtime.nationalrail.co.uk/OpenLDBWS/wsdl.aspx", api_key=self.config.api_key)
-
-            self.board = self.Darwin.get_station_board(crs=station_chosen)
-
+            self.board = self.darwin.get_station_board(crs=station_chosen)
         
-        except Exception as e:
-            logging.critical(f"An error occured whilst trying to receive data via API: {e}")
+        except:
+            try:
+                self.api_connection()
+            except Exception as e:
+                logging.critical(f"An error occured whilst trying to receive data via API: {e}")
 
         self.service_display_1.configure(state="normal")
         self.service_display_1.delete("1.0", "end")
