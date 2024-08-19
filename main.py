@@ -132,6 +132,9 @@ class TrainFetcher():
 
     def crs_code_to_station_name(self, station_chosen): #Changes the CRS code to a full name string for the station
         return self.darwin.get_station_board(crs=self.station_chosen)
+    
+    def write_to_output(self, text):
+        self.service_display_1.insert("end", text)
 
     def get_service_data(self, station_chosen):
 
@@ -161,24 +164,24 @@ class TrainFetcher():
             if displayed_services >= self.config.max_services: #break loop after configured limit of services to be displayed is reached
                 break
             
-            destination = service.destination_text
+            self.destination = service.destination_text
             
             if self.config.arrival_switch == 1:
-                arrival_time = service.sta
+                self.arrival_time = service.sta
                 
             elif self.config.arrival_switch == 2:
-                departure_time = service.std
+                self.departure_time = service.std
                 
-            operator = service.operator_name
-            platform = service.platform
+            self.operator = service.operator_name
+            self.platform = service.platform
 
-            service_output = (f"Destination: {destination}\n"
-            f"Departure time: {departure_time}\n"
-            f"Platform: {platform}\n"
-            f"Provider: {operator}\n"
+            service_output = (f"Destination: {self.destination}\n"
+            f"Departure time: {self.departure_time}\n"
+            f"Platform: {self.platform}\n"
+            f"Provider: {self.operator}\n"
             f"------------------------------------------\n\n")
 
-            self.service_display_1.insert("end", service_output)
+            self.write_to_output(service_output)
 
             displayed_services += 1
         
