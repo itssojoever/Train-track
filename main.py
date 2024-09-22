@@ -5,6 +5,7 @@ import os
 import logging
 import customtkinter
 import time
+import configparser
 
 
 from nredarwin.webservice import DarwinLdbSession
@@ -34,8 +35,6 @@ class Config():
 
     def load_config(self, env_file: str=".env"):
         load_dotenv(env_file)
-
-
         
 class TrainFetcher():
 
@@ -151,7 +150,7 @@ class TrainFetcher():
         self.service_display_1.delete("1.0", "end")
 
         station_full_description = str(self.crs_code_to_station_name(station_chosen))
-        station_full_description_slice = station_full_description[5:]
+        station_full_description_slice = station_full_description[5:] #Slice off CRS code, such that only full title remains
 
         chosen_station_output = (f"Displaying services for: {station_full_description_slice}\n"
                                  "===============================\n\n")
@@ -194,6 +193,9 @@ class TrainFetcher():
         self.root.after(15000, self.schedule_service_data)
 
         logging.info(msg="New API call: services should update")
+
+#class Schedulers():
+    
 
 if __name__ == '__main__':
     config = Config()
