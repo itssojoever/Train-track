@@ -18,13 +18,13 @@ class Config():
     def __init__(self, env_file: str=".env"):
         self.load_config(env_file)
 
-        self.color_theme = "dark-blue"
-        self.appearance_mode = "system"
+        self.color_theme = "dark-blue" #available themes: "blue", "dark-blue", "green"
+        self.appearance_mode = "system" #available appearance modes: "system", "dark", "light"
 
         self.arrival_switch = 2 #1 for arrival time, #2 for departure time
         self.max_services_options = ["1", "2", "3", "4", "5", "6", "7", "8"] #Maximum number of services to display
-        self.max_services = 4
-        self.crs = ["BHM", "BRV", "UNI"]
+        self.max_services = 4 #number of coming services to display
+        self.crs = ["BHM", "BRV", "UNI"] #CRS code of stations to display in dropdown
 
         #get apikey
         self.api_key = os.getenv("api_key")
