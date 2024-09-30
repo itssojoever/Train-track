@@ -5,7 +5,6 @@ import os
 import logging
 import customtkinter
 import time
-import configparser
 
 
 from nredarwin.webservice import DarwinLdbSession
@@ -194,8 +193,6 @@ class TrainFetcher():
 
         logging.info(msg="New API call: services should update")
 
-#class Schedulers():
-    
 
 if __name__ == '__main__':
     config = Config()
